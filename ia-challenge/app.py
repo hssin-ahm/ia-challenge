@@ -12,13 +12,13 @@ app = Flask(__name__)
 @app.route('/predict', methods=['POST'])
 def predict():
     input_data = request.json  # Get the input data from the request body
-    correctInput(input_data)
-    prediction = model.predict(input_data)  # Make a prediction using the model
+    new_data = summarizingData(input_data)
+    prediction = model.predict(new_data)  # Make a prediction using the model
     return jsonify(prediction.tolist())  # Send the prediction back as JSON
 
 
 
-def correctInput(input_data):
+def summarizingData(input_data):
     # term
     input_data['term'] = input_data['term'][:3]
 
@@ -32,7 +32,13 @@ def correctInput(input_data):
     input_data = data.drop(column_name, axis=1)
     input_data = pd.concat([data, dummies], axis=1)
 
-    print(subgrade_dummies)
+    # adresse
+    input_data['zip_code'] = input_data['address'][-5:]
+
+    # earliest_cr_year
+    input_data['earliest_cr_year'] = input_data['earliest_cr_line'][-4:]
+
+    return input_data
 
 
 
